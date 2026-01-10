@@ -8,6 +8,13 @@
 
 While it's a versatile tool for any vectorization task, it is specifically fine-tuned for **CNC machining, laser cutting, and engraving workflows**, providing specialized tracing methods that standard converters often lack.
 
+![Single Conversion](static/single.png)
+*Single image conversion with real-time preview*
+
+![Batch Conversion](static/batch.png)
+*Batch processing support for multiple files*
+
+
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.0+-green)
 ![Docker](https://img.shields.io/badge/Docker-supported-blue)
