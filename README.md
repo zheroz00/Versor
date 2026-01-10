@@ -1,22 +1,34 @@
+<p align="center">
+  <img src="static/logo.png" width="200" alt="Vector Converter Logo">
+</p>
+
 # Vector Converter
 
-A local web application for converting raster images to SVG files. Built for CNC and laser cutting workflows, but useful for anyone who needs clean vector output.
+**Vector Converter** is a professional-grade, local web application designed to transform raster images (PNG, JPG, BMP, GIF) into clean, optimized SVG vectors. 
+
+While it's a versatile tool for any vectorization task, it is specifically fine-tuned for **CNC machining, laser cutting, and engraving workflows**, providing specialized tracing methods that standard converters often lack.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.0+-green)
 ![Docker](https://img.shields.io/badge/Docker-supported-blue)
+![License](https://img.shields.io/badge/License-BSL_1.1-orange)
 
-## What It Does
+## Features
 
-Converts PNG, JPG, BMP, and GIF images to SVG using three different methods:
+- **Specialized Tracing**: Choose between Outline, Centerline, or Color/Detail tracing based on your specific fabrication needs.
+- **CNC Optimized**: Presets designed for toolpath generation, ensuring clean curves and minimal nodes.
+- **Privacy First**: Runs entirely on your local machine; no images are ever uploaded to a third-party server.
+- **Modern UI**: A responsive, dark-mode interface with real-time side-by-side previews.
+
+## Tracing Methods
 
 | Method | Best For | How It Works |
 |--------|----------|--------------|
-| **Potrace** | CNC cutting, silhouettes | Traces outlines around shapes |
-| **Centerline** | Engraving, line art, text | Traces through the middle of strokes |
-| **vtracer** | Color artwork, illustrations | Preserves colors as separate paths |
+| **Potrace** | CNC cutting, silhouettes | Traces clean outlines around shapes |
+| **Centerline** | Engraving, line art, text | Traces single-line paths through the middle of strokes |
+| **vtracer** | Color artwork, illustrations | Preserves colors and layers for complex graphics |
 
-Each method has presets optimized for common use cases, plus custom settings for fine-tuning.
+Each method comes with pre-configured presets—like **CNC Precise**, **Technical**, or **Pixel Art**—plus granular custom controls for power users.
 
 ## Requirements
 
