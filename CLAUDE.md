@@ -26,7 +26,7 @@ Opens at http://localhost:5000
 
 **Docker:**
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ## External Dependencies
@@ -59,7 +59,7 @@ vector_converter/
 ├── templates/
 │   └── index.html         # HTML with tabbed UI
 ├── Dockerfile
-└── docker-compose.yml
+└── docker compose.yml
 ```
 
 **Conversion Pipelines:**
