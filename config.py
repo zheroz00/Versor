@@ -7,7 +7,7 @@ import os
 import tempfile
 
 # Tool paths - Use environment variables or fall back to defaults
-POTRACE_PATH = os.environ.get('POTRACE_PATH', r"C:\MyPrograms\potrace-1.16.win64\potrace.exe")
+POTRACE_PATH = os.environ.get('POTRACE_PATH', '/usr/bin/potrace')
 AUTOTRACE_PATH = os.environ.get('AUTOTRACE_PATH', '/usr/bin/autotrace')
 VTRACER_PATH = os.environ.get('VTRACER_PATH', '/usr/local/bin/vtracer')
 

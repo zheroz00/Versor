@@ -1,12 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vector Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Orbitron:wght@400..900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
+    <div class="bg-decor">
+        <!-- Abstract Vector Art Background Decoration -->
+        <svg class="decor-item decor-1" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 500 Q 300 100 700 300" stroke="var(--accent)" stroke-width="2" stroke-dasharray="8 4"
+                opacity="0.3" />
+            <circle cx="100" cy="500" r="4" fill="var(--accent)" />
+            <circle cx="700" cy="300" r="4" fill="var(--accent)" />
+            <line x1="300" y1="100" x2="100" y2="500" stroke="var(--text-muted)" stroke-width="1" opacity="0.2" />
+            <rect x="296" y="96" width="8" height="8" fill="var(--text-muted)" opacity="0.5" />
+        </svg>
+        <svg class="decor-item decor-2" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 350 L 350 350 L 350 50 L 50 50 Z" stroke="var(--accent)" stroke-width="1" opacity="0.1" />
+            <path d="M50 350 L 350 50" stroke="var(--accent)" stroke-width="1" opacity="0.1" />
+            <circle cx="200" cy="200" r="100" stroke="var(--accent)" stroke-width="1" opacity="0.1" />
+        </svg>
+        <svg class="decor-item decor-3" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="100" x2="200" y2="100" stroke="var(--accent)" stroke-width="1" />
+            <line x1="100" y1="0" x2="100" y2="200" stroke="var(--accent)" stroke-width="1" />
+            <circle cx="100" cy="100" r="5" stroke="var(--accent)" />
+            <path
+                d="M20 100 L 20 110 M 40 100 L 40 110 M 60 100 L 60 110 M 80 100 L 80 110 M 120 100 L 120 110 M 140 100 L 140 110 M 160 100 L 160 110 M 180 100 L 180 110"
+                stroke="var(--accent)" stroke-width="1" />
+        </svg>
+        <svg class="decor-item decor-4" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M200 50 L 350 350 L 50 350 Z" stroke="var(--accent)" stroke-width="1" />
+            <path d="M200 50 L 200 350 M 50 350 L 350 350 M 350 350 L 200 50" stroke="var(--accent)"
+                stroke-width="0.5" />
+            <circle cx="200" cy="50" r="3" fill="var(--accent)" />
+            <circle cx="350" cy="350" r="3" fill="var(--accent)" />
+            <circle cx="50" cy="350" r="3" fill="var(--accent)" />
+            <path d="M100 250 L 300 250 L 200 150 Z" stroke="var(--accent)" stroke-width="1" opacity="0.5" />
+        </svg>
+    </div>
     <div class="container">
         <h1>Vector Converter</h1>
         <p class="subtitle">Image to SVG for CNC Tool Paths</p>
@@ -15,9 +55,9 @@
         <div class="error-banner">
             <strong>Dependency Issues:</strong>
             <ul>
-            {% for error in dep_errors %}
+                {% for error in dep_errors %}
                 <li>{{ error }}</li>
-            {% endfor %}
+                {% endfor %}
             </ul>
         </div>
         {% endif %}
@@ -26,9 +66,9 @@
         <div class="warning-banner">
             <strong>Optional Tools Missing:</strong>
             <ul>
-            {% for warning in dep_warnings %}
+                {% for warning in dep_warnings %}
                 <li>{{ warning }}</li>
-            {% endfor %}
+                {% endfor %}
             </ul>
         </div>
         {% endif %}
@@ -48,13 +88,16 @@
 
                 <h2>Method</h2>
                 <div class="tab-container">
-                    <button class="tab-btn active" data-method="potrace" {% if not available_methods.potrace %}disabled{% endif %}>
+                    <button class="tab-btn active" data-method="potrace" {% if not available_methods.potrace
+                        %}disabled{% endif %}>
                         Potrace
                     </button>
-                    <button class="tab-btn" data-method="centerline" {% if not available_methods.centerline %}disabled{% endif %}>
+                    <button class="tab-btn" data-method="centerline" {% if not available_methods.centerline %}disabled{%
+                        endif %}>
                         Centerline
                     </button>
-                    <button class="tab-btn" data-method="vtracer" {% if not available_methods.vtracer %}disabled{% endif %}>
+                    <button class="tab-btn" data-method="vtracer" {% if not available_methods.vtracer %}disabled{% endif
+                        %}>
                         vtracer
                     </button>
                 </div>
@@ -67,11 +110,9 @@
                     <div class="preset-grid">
                         {% for key, preset in potrace_presets.items() %}
                         <button class="preset-btn {% if key == 'cnc_precise' %}active{% endif %}"
-                                data-preset="{{ key }}" data-method="potrace"
-                                data-corner="{{ preset.corner_threshold }}"
-                                data-optimize="{{ preset.optimize_tolerance }}"
-                                data-despeckle="{{ preset.despeckle }}"
-                                data-threshold="{{ preset.threshold }}">
+                            data-preset="{{ key }}" data-method="potrace" data-corner="{{ preset.corner_threshold }}"
+                            data-optimize="{{ preset.optimize_tolerance }}" data-despeckle="{{ preset.despeckle }}"
+                            data-threshold="{{ preset.threshold }}">
                             <div class="preset-name">{{ preset.name }}</div>
                             <div class="preset-desc">{{ preset.description }}</div>
                         </button>
@@ -108,16 +149,15 @@
                 <!-- Centerline Tab -->
                 <div class="tab-content" id="tab-centerline">
                     <div class="method-description">
-                        Centerline tracing - produces single-line paths through the middle of strokes. Ideal for engraving, text, and line art.
+                        Centerline tracing - produces single-line paths through the middle of strokes. Ideal for
+                        engraving, text, and line art.
                     </div>
                     <div class="preset-grid">
                         {% for key, preset in centerline_presets.items() %}
-                        <button class="preset-btn {% if key == 'line_art' %}active{% endif %}"
-                                data-preset="{{ key }}" data-method="centerline"
-                                data-despeckle-level="{{ preset.despeckle_level }}"
-                                data-corner="{{ preset.corner_threshold }}"
-                                data-line-threshold="{{ preset.line_threshold }}"
-                                data-threshold="{{ preset.threshold }}">
+                        <button class="preset-btn {% if key == 'line_art' %}active{% endif %}" data-preset="{{ key }}"
+                            data-method="centerline" data-despeckle-level="{{ preset.despeckle_level }}"
+                            data-corner="{{ preset.corner_threshold }}"
+                            data-line-threshold="{{ preset.line_threshold }}" data-threshold="{{ preset.threshold }}">
                             <div class="preset-name">{{ preset.name }}</div>
                             <div class="preset-desc">{{ preset.description }}</div>
                         </button>
@@ -154,19 +194,17 @@
                 <!-- vtracer Tab -->
                 <div class="tab-content" id="tab-vtracer">
                     <div class="method-description">
-                        Color/detail tracing - preserves colors and fine detail. Best for artwork, illustrations, and pixel art.
+                        Color/detail tracing - preserves colors and fine detail. Best for artwork, illustrations, and
+                        pixel art.
                     </div>
                     <div class="preset-grid">
                         {% for key, preset in vtracer_presets.items() %}
                         <button class="preset-btn {% if key == 'smooth_color' %}active{% endif %}"
-                                data-preset="{{ key }}" data-method="vtracer"
-                                data-mode="{{ preset.mode }}"
-                                data-color-precision="{{ preset.color_precision }}"
-                                data-gradient-step="{{ preset.gradient_step }}"
-                                data-corner="{{ preset.corner_threshold }}"
-                                data-segment="{{ preset.segment_length }}"
-                                data-splice="{{ preset.splice_threshold }}"
-                                data-filter-speckle="{{ preset.filter_speckle }}">
+                            data-preset="{{ key }}" data-method="vtracer" data-mode="{{ preset.mode }}"
+                            data-color-precision="{{ preset.color_precision }}"
+                            data-gradient-step="{{ preset.gradient_step }}" data-corner="{{ preset.corner_threshold }}"
+                            data-segment="{{ preset.segment_length }}" data-splice="{{ preset.splice_threshold }}"
+                            data-filter-speckle="{{ preset.filter_speckle }}">
                             <div class="preset-name">{{ preset.name }}</div>
                             <div class="preset-desc">{{ preset.description }}</div>
                         </button>
@@ -236,4 +274,5 @@
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
+
 </html>
