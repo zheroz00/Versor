@@ -1,6 +1,7 @@
 services:
   vectorizer:
-    build: .
+    image: ghcr.io/zheroz00/vector_converter:latest
+    # build: . # Uncomment to build locally for development
     ports:
       - "5555:5000"
     environment:
