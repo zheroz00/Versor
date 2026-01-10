@@ -1,7 +1,7 @@
 services:
   versor:
     image: ghcr.io/zheroz00/versor:latest
-    # build: . # Uncomment to build locally for development
+    build: . # Falls back to local build if registry image is missing
     ports:
       - "5555:5000"
     environment:
