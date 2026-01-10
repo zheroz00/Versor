@@ -1,5 +1,5 @@
 """
-Vector Converter - Local Web UI for image to SVG conversion
+Versor - Local Web UI for image to SVG conversion
 Supports multiple vectorization methods: Potrace, Centerline, vtracer
 """
 
@@ -201,7 +201,7 @@ def preview(filename):
 
 if __name__ == '__main__':
     print("\n" + "=" * 50)
-    print("  Vector Converter")
+    print("  Versor")
     print("  Open http://localhost:5000 in your browser")
     print("=" * 50 + "\n")
 

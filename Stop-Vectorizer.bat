@@ -1,3 +1,3 @@
 @echo off
-powershell -ExecutionPolicy Bypass -File "%~dp0Stop-Vectorizer.ps1"
+powershell -ExecutionPolicy Bypass -File "%~dp0Stop-Versor.ps1"
 pause

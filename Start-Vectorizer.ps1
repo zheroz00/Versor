@@ -1,5 +1,5 @@
-# Start-Vectorizer.ps1
-# One-click launcher for Vector Converter
+# Start-Versor.ps1
+# One-click launcher for Versor
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pidFile = Join-Path $scriptDir "server.pid"
@@ -10,7 +10,7 @@ $url = "http://localhost:$port"
 if (Test-Path $pidFile) {
     $existingPid = Get-Content $pidFile -ErrorAction SilentlyContinue
     if ($existingPid -and (Get-Process -Id $existingPid -ErrorAction SilentlyContinue)) {
-        Write-Host "Vector Converter is already running (PID: $existingPid)" -ForegroundColor Yellow
+        Write-Host "Versor is already running (PID: $existingPid)" -ForegroundColor Yellow
         Write-Host "Opening browser..." -ForegroundColor Cyan
         Start-Process $url
         exit 0
@@ -18,7 +18,7 @@ if (Test-Path $pidFile) {
 }
 
 Write-Host ""
-Write-Host "  Vector Converter" -ForegroundColor Cyan
+Write-Host "  Versor" -ForegroundColor Cyan
 Write-Host "  ================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -41,5 +41,5 @@ Write-Host "Opening browser..." -ForegroundColor Cyan
 Start-Process $url
 
 Write-Host ""
-Write-Host "To stop the server, run: .\Stop-Vectorizer.ps1" -ForegroundColor Yellow
-Write-Host "Or double-click Stop-Vectorizer.bat" -ForegroundColor Yellow
+Write-Host "To stop the server, run: .\Stop-Versor.ps1" -ForegroundColor Yellow
+Write-Host "Or double-click Stop-Versor.bat" -ForegroundColor Yellow

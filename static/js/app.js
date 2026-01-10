@@ -1,5 +1,5 @@
 /**
- * Vector Converter - Main Application JavaScript
+ * Versor - Main Application JavaScript
  */
 
 // DOM Elements

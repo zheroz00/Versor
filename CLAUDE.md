@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Vector Converter is a local web application for converting raster images (PNG, JPG, BMP, GIF) to SVG files, optimized for CNC tool path generation. It supports three vectorization methods:
+Versor is a local web application for converting raster images (PNG, JPG, BMP, GIF) to SVG files, optimized for CNC tool path generation. It supports three vectorization methods:
 
 - **Potrace**: Outline tracing for CNC cutting (traces around shapes)
 - **Centerline**: Single-line tracing for engraving (traces through middle of strokes)
@@ -20,8 +20,8 @@ Opens at http://localhost:5000
 
 **Windows convenience scripts:**
 ```powershell
-.\Start-Vectorizer.ps1  # Starts server in background, opens browser
-.\Stop-Vectorizer.ps1   # Stops the server
+.\Start-Versor.ps1  # Starts server in background, opens browser
+.\Stop-Versor.ps1   # Stops the server
 ```
 
 **Docker:**

@@ -1,11 +1,11 @@
-# Stop-Vectorizer.ps1
-# Clean shutdown for Vector Converter
+# Stop-Versor.ps1
+# Clean shutdown for Versor
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pidFile = Join-Path $scriptDir "server.pid"
 
 Write-Host ""
-Write-Host "  Stopping Vector Converter..." -ForegroundColor Cyan
+Write-Host "  Stopping Versor..." -ForegroundColor Cyan
 Write-Host ""
 
 if (Test-Path $pidFile) {

@@ -1,5 +1,5 @@
 """
-Configuration for Vector Converter
+Configuration for Versor
 Tool paths, folders, and environment settings
 """
 

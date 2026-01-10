@@ -1,2 +1,2 @@
 @echo off
-powershell -ExecutionPolicy Bypass -File "%~dp0Start-Vectorizer.ps1"
+powershell -ExecutionPolicy Bypass -File "%~dp0Start-Versor.ps1"

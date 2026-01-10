@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="static/logo.png" width="200" alt="Vector Converter Logo">
+  <img src="static/logo.png" width="200" alt="Versor Logo">
 </p>
 
-# Vector Converter
+# Versor
 
-**Vector Converter** is a local web application designed to transform raster images (PNG, JPG, BMP, GIF) into clean, optimized SVG vectors. 
+**Versor** is a local web application designed to transform raster images (PNG, JPG, BMP, GIF) into clean, optimized SVG vectors. 
 
 While it's a versatile tool for any vectorization task, it is specifically fine-tuned for **CNC machining, laser cutting, and engraving workflows**, providing specialized tracing methods that standard converters often lack.
 
@@ -44,7 +44,7 @@ Or just use Docker and skip the dependency hassle.
 
 ### Docker (Quick Start)
 
-The easiest way to run Vector Converter is to use Docker.
+The easiest way to run Versor is to use Docker.
 
 1.  **Clone the repository** (or just download `docker-compose.yml`).
 2.  **Run the application**:
@@ -80,8 +80,8 @@ Open http://localhost:5000 in your browser.
 PowerShell scripts are included for convenience:
 
 ```powershell
-.\Start-Vectorizer.ps1   # Start server and open browser
-.\Stop-Vectorizer.ps1    # Stop server
+.\Start-Versor.ps1   # Start server and open browser
+.\Stop-Versor.ps1    # Stop server
 ```
 
 ## Configuration
