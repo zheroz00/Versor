@@ -4,7 +4,7 @@
 
 # Vector Converter
 
-**Vector Converter** is a professional-grade, local web application designed to transform raster images (PNG, JPG, BMP, GIF) into clean, optimized SVG vectors. 
+**Vector Converter** is a local web application designed to transform raster images (PNG, JPG, BMP, GIF) into clean, optimized SVG vectors. 
 
 While it's a versatile tool for any vectorization task, it is specifically fine-tuned for **CNC machining, laser cutting, and engraving workflows**, providing specialized tracing methods that standard converters often lack.
 
