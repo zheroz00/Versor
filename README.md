@@ -59,7 +59,7 @@ Docker will automatically pull the pre-built image from the GitHub Container Reg
 If you prefer to run the image directly without downloading any files:
 
 ```bash
-docker run -d -p 5555:5000 --name vectorizer ghcr.io/zheroz00/vector_converter:latest
+docker run -d -p 5555:5000 --name versor ghcr.io/zheroz00/versor:latest
 ```
 
 ### Local
@@ -109,7 +109,7 @@ The web UI shows a side-by-side comparison of the original image and the convert
 ## Project Structure
 
 ```
-vector_converter/
+Versor/
 ├── app.py                 # Flask routes
 ├── config.py              # Tool paths and folders
 ├── presets.py             # Preset configurations

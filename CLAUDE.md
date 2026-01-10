@@ -43,7 +43,7 @@ Optional (enable additional methods):
 
 **Project Structure:**
 ```
-vector_converter/
+Versor/
 ├── app.py                 # Flask routes and settings extraction
 ├── config.py              # Tool paths and folder configuration
 ├── presets.py             # Presets for all three methods

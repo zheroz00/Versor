@@ -12,5 +12,5 @@ AUTOTRACE_PATH = os.environ.get('AUTOTRACE_PATH', '/usr/bin/autotrace')
 VTRACER_PATH = os.environ.get('VTRACER_PATH', '/usr/local/bin/vtracer')
 
 # Temp folders for uploads and outputs
-UPLOAD_FOLDER = tempfile.mkdtemp(prefix="vectorizer_")
-OUTPUT_FOLDER = tempfile.mkdtemp(prefix="vectorizer_out_")
+UPLOAD_FOLDER = tempfile.mkdtemp(prefix="versor_")
+OUTPUT_FOLDER = tempfile.mkdtemp(prefix="versor_out_")
