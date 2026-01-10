@@ -1,0 +1,12 @@
+services:
+  vectorizer:
+    build: .
+    ports:
+      - "5555:5000"
+    environment:
+      - FLASK_HOST=0.0.0.0
+      - FLASK_DEBUG=false
+      - POTRACE_PATH=/usr/bin/potrace
+      - AUTOTRACE_PATH=/usr/bin/autotrace
+      - VTRACER_PATH=/usr/local/bin/vtracer
+    restart: unless-stopped

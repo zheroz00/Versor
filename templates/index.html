@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Vector Converter</h1>
+        <p class="subtitle">Image to SVG for CNC Tool Paths</p>
+
+        {% if dep_errors %}
+        <div class="error-banner">
+            <strong>Dependency Issues:</strong>
+            <ul>
+            {% for error in dep_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if dep_warnings %}
+        <div class="warning-banner">
+            <strong>Optional Tools Missing:</strong>
+            <ul>
+            {% for warning in dep_warnings %}
+                <li>{{ warning }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="main-grid">
+            <div class="panel">
+                <h2>Input</h2>
+
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">+</div>
+                    <p>Drop images here or click to browse</p>
+                    <p style="font-size: 0.85em; margin-top: 5px;">PNG, JPG, BMP, GIF</p>
+                    <input type="file" id="fileInput" multiple accept=".png,.jpg,.jpeg,.bmp,.gif">
+                </div>
+
+                <div class="file-list" id="fileList"></div>
+
+                <h2>Method</h2>
+                <div class="tab-container">
+                    <button class="tab-btn active" data-method="potrace" {% if not available_methods.potrace %}disabled{% endif %}>
+                        Potrace
+                    </button>
+                    <button class="tab-btn" data-method="centerline" {% if not available_methods.centerline %}disabled{% endif %}>
+                        Centerline
+                    </button>
+                    <button class="tab-btn" data-method="vtracer" {% if not available_methods.vtracer %}disabled{% endif %}>
+                        vtracer
+                    </button>
+                </div>
+
+                <!-- Potrace Tab -->
+                <div class="tab-content active" id="tab-potrace">
+                    <div class="method-description">
+                        Outline tracing - converts images to outlined shapes. Best for solid graphics and CNC cutting.
+                    </div>
+                    <div class="preset-grid">
+                        {% for key, preset in potrace_presets.items() %}
+                        <button class="preset-btn {% if key == 'cnc_precise' %}active{% endif %}"
+                                data-preset="{{ key }}" data-method="potrace"
+                                data-corner="{{ preset.corner_threshold }}"
+                                data-optimize="{{ preset.optimize_tolerance }}"
+                                data-despeckle="{{ preset.despeckle }}"
+                                data-threshold="{{ preset.threshold }}">
+                            <div class="preset-name">{{ preset.name }}</div>
+                            <div class="preset-desc">{{ preset.description }}</div>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <div class="custom-settings" id="customSettings-potrace">
+                        <div class="setting-row">
+                            <label>Corner Threshold</label>
+                            <input type="range" id="cornerThreshold" min="0" max="1.5" step="0.1" value="0">
+                            <span class="setting-value" id="cornerValue">0</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Curve Optimization</label>
+                            <input type="range" id="optimizeTolerance" min="0.01" max="1" step="0.01" value="0.1">
+                            <span class="setting-value" id="optimizeValue">0.1</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Despeckle Size</label>
+                            <input type="range" id="despeckle" min="0" max="20" step="1" value="2">
+                            <span class="setting-value" id="despeckleValue">2</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>B/W Threshold %</label>
+                            <input type="range" id="threshold" min="10" max="90" step="5" value="50">
+                            <span class="setting-value" id="thresholdValue">50</span>
+                        </div>
+                        <div class="setting-row checkbox-row">
+                            <input type="checkbox" id="invert">
+                            <label for="invert">Invert colors</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Centerline Tab -->
+                <div class="tab-content" id="tab-centerline">
+                    <div class="method-description">
+                        Centerline tracing - produces single-line paths through the middle of strokes. Ideal for engraving, text, and line art.
+                    </div>
+                    <div class="preset-grid">
+                        {% for key, preset in centerline_presets.items() %}
+                        <button class="preset-btn {% if key == 'line_art' %}active{% endif %}"
+                                data-preset="{{ key }}" data-method="centerline"
+                                data-despeckle-level="{{ preset.despeckle_level }}"
+                                data-corner="{{ preset.corner_threshold }}"
+                                data-line-threshold="{{ preset.line_threshold }}"
+                                data-threshold="{{ preset.threshold }}">
+                            <div class="preset-name">{{ preset.name }}</div>
+                            <div class="preset-desc">{{ preset.description }}</div>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <div class="custom-settings" id="customSettings-centerline">
+                        <div class="setting-row">
+                            <label>Despeckle Level</label>
+                            <input type="range" id="cl-despeckleLevel" min="0" max="10" step="1" value="2">
+                            <span class="setting-value" id="cl-despeckleValue">2</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Corner Threshold</label>
+                            <input type="range" id="cl-cornerThreshold" min="50" max="180" step="5" value="100">
+                            <span class="setting-value" id="cl-cornerValue">100</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Line Threshold</label>
+                            <input type="range" id="cl-lineThreshold" min="0.1" max="3" step="0.1" value="1.0">
+                            <span class="setting-value" id="cl-lineValue">1.0</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>B/W Threshold %</label>
+                            <input type="range" id="cl-threshold" min="10" max="90" step="5" value="50">
+                            <span class="setting-value" id="cl-thresholdValue">50</span>
+                        </div>
+                        <div class="setting-row checkbox-row">
+                            <input type="checkbox" id="cl-invert">
+                            <label for="cl-invert">Invert colors</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- vtracer Tab -->
+                <div class="tab-content" id="tab-vtracer">
+                    <div class="method-description">
+                        Color/detail tracing - preserves colors and fine detail. Best for artwork, illustrations, and pixel art.
+                    </div>
+                    <div class="preset-grid">
+                        {% for key, preset in vtracer_presets.items() %}
+                        <button class="preset-btn {% if key == 'smooth_color' %}active{% endif %}"
+                                data-preset="{{ key }}" data-method="vtracer"
+                                data-mode="{{ preset.mode }}"
+                                data-color-precision="{{ preset.color_precision }}"
+                                data-gradient-step="{{ preset.gradient_step }}"
+                                data-corner="{{ preset.corner_threshold }}"
+                                data-segment="{{ preset.segment_length }}"
+                                data-splice="{{ preset.splice_threshold }}"
+                                data-filter-speckle="{{ preset.filter_speckle }}">
+                            <div class="preset-name">{{ preset.name }}</div>
+                            <div class="preset-desc">{{ preset.description }}</div>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <div class="custom-settings" id="customSettings-vtracer">
+                        <div class="setting-row">
+                            <label>Mode</label>
+                            <select id="vt-mode">
+                                <option value="polygon">Polygon (sharp)</option>
+                                <option value="spline" selected>Spline (smooth)</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <label>Color Precision</label>
+                            <input type="range" id="vt-colorPrecision" min="2" max="10" step="1" value="6">
+                            <span class="setting-value" id="vt-colorValue">6</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Gradient Step</label>
+                            <input type="range" id="vt-gradientStep" min="2" max="32" step="2" value="8">
+                            <span class="setting-value" id="vt-gradientValue">8</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Corner Threshold</label>
+                            <input type="range" id="vt-corner" min="15" max="180" step="5" value="60">
+                            <span class="setting-value" id="vt-cornerValue">60</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Segment Length</label>
+                            <input type="range" id="vt-segment" min="2" max="16" step="1" value="4">
+                            <span class="setting-value" id="vt-segmentValue">4</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Splice Threshold</label>
+                            <input type="range" id="vt-splice" min="15" max="90" step="5" value="45">
+                            <span class="setting-value" id="vt-spliceValue">45</span>
+                        </div>
+                        <div class="setting-row">
+                            <label>Filter Speckle</label>
+                            <input type="range" id="vt-filterSpeckle" min="0" max="20" step="1" value="4">
+                            <span class="setting-value" id="vt-filterValue">4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="convert-btn" id="convertBtn" disabled>Convert to SVG</button>
+            </div>
+
+            <div class="panel results-panel">
+                <h2>Results</h2>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Converting...</p>
+                </div>
+
+                <div id="results">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#8680;</div>
+                        <p>Converted files will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
