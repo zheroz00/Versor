@@ -42,13 +42,23 @@ Or just use Docker and skip the dependency hassle.
 
 ## Quick Start
 
-### Docker (recommended)
+### Docker (Quick Start)
+
+The easiest way to run Vector Converter is to use the pre-built image from the GitHub Container Registry:
 
 ```bash
-docker compose up -d
+docker run -d -p 5555:5000 --name vectorizer ghcr.io/zheroz00/vector_converter:latest
 ```
 
 Open http://localhost:5555 in your browser.
+
+### Docker (Development / Local Build)
+
+If you prefer to build it yourself or contribute to development:
+
+```bash
+docker compose up -d --build
+```
 
 ### Local
 
