@@ -167,16 +167,10 @@ def convert():
         if original_preview:
             result['original_preview'] = original_preview
 
-        # Include SVG preview if successful
+        # Include preview URL if successful
         if success and os.path.exists(output_path):
             result['download_url'] = f'/download/{output_filename}'
-            file_size = os.path.getsize(output_path)
-            # Read SVG for inline preview (up to 2MB for color SVGs)
-            if file_size < 2000000:  # < 2MB
-                with open(output_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    result['svg_content'] = f.read()
-            else:
-                result['preview_unavailable_reason'] = f'File too large for preview ({file_size // 1024}KB)'
+            result['preview_url'] = f'/preview/{output_filename}'
 
         results.append(result)
 

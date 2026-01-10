@@ -384,26 +384,11 @@ function renderResults(results) {
             const afterContent = document.createElement('div');
             afterContent.className = 'comparison-content';
 
-            if (result.svg_content) {
-                // Parse SVG safely - only allow SVG elements from our backend
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(result.svg_content, 'image/svg+xml');
-                const svgElement = svgDoc.documentElement;
-
-                // Check if parsing was successful (no parsererror)
-                if (svgElement && svgElement.nodeName === 'svg') {
-                    const importedSvg = document.importNode(svgElement, true);
-
-                    // Normalize SVG for consistent preview display
-                    normalizeSvgForPreview(importedSvg);
-
-                    afterContent.appendChild(importedSvg);
-                } else {
-                    const noPreview = document.createElement('p');
-                    noPreview.textContent = 'Preview not available';
-                    noPreview.style.color = '#999';
-                    afterContent.appendChild(noPreview);
-                }
+            if (result.preview_url) {
+                const convertedImg = document.createElement('img');
+                convertedImg.src = result.preview_url;
+                convertedImg.alt = 'Converted SVG';
+                afterContent.appendChild(convertedImg);
             } else {
                 const noPreview = document.createElement('p');
                 noPreview.textContent = result.preview_unavailable_reason || 'Preview not available';
