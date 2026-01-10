@@ -138,3 +138,9 @@ After the Change Date, the software automatically becomes fully Open Source unde
 ## Contributing
 
 Issues and pull requests welcome. This is a personal project, so response times may vary.
+
+## Support
+
+I built this tool to solve a specific problem in my own workflow. If it ends up saving you some time in your shop or studio, feel free to support the project. I’m just glad to see it getting some use.
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://www.buymeacoffee.com/zheroz00)
