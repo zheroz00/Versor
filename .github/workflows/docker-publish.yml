@@ -44,11 +44,18 @@ jobs:
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
+      # Explicitly tag 'latest' for the main branch
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{github.ref == format('refs/heads/{0}', 'main')}}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
