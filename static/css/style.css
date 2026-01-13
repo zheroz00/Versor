@@ -342,6 +342,18 @@ h1 {
 }
 
 /* Custom Settings */
+.postprocess-settings {
+    background: var(--bg-sub);
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-top: 15px;
+    border-left: 3px solid var(--accent);
+}
+
+.postprocess-settings .setting-row:first-child {
+    margin-top: 0;
+}
+
 .custom-settings {
     display: none;
     background: var(--bg-sub);
@@ -409,6 +421,113 @@ h1 {
 .checkbox-row input {
     width: 20px;
     height: 20px;
+}
+
+/* Simplify settings - hidden by default */
+.simplify-settings {
+    display: none;
+    margin-left: 32px;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent);
+}
+
+.simplify-settings.visible {
+    display: flex;
+}
+
+/* Straighten settings - hidden by default */
+.straighten-settings {
+    display: none;
+    margin-left: 32px;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent);
+}
+
+.straighten-settings.visible {
+    display: flex;
+}
+
+/* Format Selector */
+.format-selector {
+    margin: 20px 0;
+    padding: 15px;
+    background: var(--bg-sub);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.format-selector > label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.format-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.format-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.format-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-main);
+}
+
+.format-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-main);
+}
+
+.format-note {
+    display: none;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(191, 68, 8, 0.15);
+    border-radius: 6px;
+    font-size: 0.85em;
+    color: var(--accent);
+}
+
+/* No Preview Message */
+.no-preview-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.no-preview-msg .format-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--accent);
+    color: var(--text-main);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 1.2em;
+    margin-bottom: 12px;
+}
+
+.no-preview-msg p {
+    margin: 0;
+    font-size: 0.9em;
 }
 
 /* Convert Button */
@@ -668,4 +787,42 @@ h1 {
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Stale Results Indicator */
+.stale-indicator {
+    display: none;
+    background: var(--warning);
+    color: var(--bg-main);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    font-weight: 500;
+    align-items: center;
+    gap: 8px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.stale-indicator.visible {
+    display: flex;
+}
+
+.stale-icon {
+    font-size: 1.2em;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#results.stale {
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
 }

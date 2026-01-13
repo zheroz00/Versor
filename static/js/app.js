@@ -13,11 +13,76 @@ const loading = document.getElementById('loading');
 // State
 let selectedFiles = [];
 let currentMethod = 'potrace';
+let currentFormat = 'svg';
 let currentPresets = {
     potrace: 'cnc_precise',
     centerline: 'line_art',
     vtracer: 'smooth_color'
 };
+
+// Track what settings were used for the last conversion
+let lastConversion = {
+    method: null,
+    preset: null,
+    format: null,
+    customHash: null,  // Hash of custom settings to detect changes
+    hasResults: false
+};
+
+// Generate a hash of current custom settings to detect changes
+function getCustomSettingsHash(method) {
+    const values = [];
+    if (method === 'potrace') {
+        values.push(document.getElementById('cornerThreshold')?.value);
+        values.push(document.getElementById('optimizeTolerance')?.value);
+        values.push(document.getElementById('despeckle')?.value);
+        values.push(document.getElementById('threshold')?.value);
+        values.push(document.getElementById('invert')?.checked);
+        values.push(document.getElementById('straighten')?.checked);
+        values.push(document.getElementById('straightenTolerance')?.value);
+        values.push(document.getElementById('simplify')?.checked);
+        values.push(document.getElementById('simplifyTolerance')?.value);
+    } else if (method === 'centerline') {
+        values.push(document.getElementById('cl-despeckleLevel')?.value);
+        values.push(document.getElementById('cl-cornerThreshold')?.value);
+        values.push(document.getElementById('cl-lineThreshold')?.value);
+        values.push(document.getElementById('cl-threshold')?.value);
+        values.push(document.getElementById('cl-invert')?.checked);
+    } else if (method === 'vtracer') {
+        values.push(document.getElementById('vt-mode')?.value);
+        values.push(document.getElementById('vt-colorPrecision')?.value);
+        values.push(document.getElementById('vt-gradientStep')?.value);
+        values.push(document.getElementById('vt-corner')?.value);
+        values.push(document.getElementById('vt-segment')?.value);
+        values.push(document.getElementById('vt-splice')?.value);
+        values.push(document.getElementById('vt-filterSpeckle')?.value);
+    }
+    return values.join('|');
+}
+
+// Check if current settings differ from last conversion and update indicator
+function updateStaleIndicator() {
+    const indicator = document.getElementById('staleIndicator');
+    if (!indicator) return;
+
+    const currentCustomHash = currentPresets[currentMethod] === 'custom'
+        ? getCustomSettingsHash(currentMethod)
+        : null;
+
+    const settingsChanged = lastConversion.hasResults &&
+        (lastConversion.method !== currentMethod ||
+         lastConversion.preset !== currentPresets[currentMethod] ||
+         lastConversion.format !== currentFormat ||
+         (currentPresets[currentMethod] === 'custom' && lastConversion.customHash !== currentCustomHash));
+
+    if (settingsChanged) {
+        indicator.classList.add('visible');
+        resultsDiv.classList.add('stale');
+    } else {
+        indicator.classList.remove('visible');
+        resultsDiv.classList.remove('stale');
+    }
+}
 
 // Initialize sliders for each method
 function initSliders() {
@@ -26,6 +91,46 @@ function initSliders() {
     setupSlider('optimizeTolerance', 'optimizeValue');
     setupSlider('despeckle', 'despeckleValue');
     setupSlider('threshold', 'thresholdValue');
+    setupSlider('simplifyTolerance', 'simplifyValue');
+    setupSlider('straightenTolerance', 'straightenValue');
+
+    // Setup straighten checkbox to show/hide tolerance slider
+    const straightenCheckbox = document.getElementById('straighten');
+    const straightenSettings = document.getElementById('straightenSettings');
+    if (straightenCheckbox && straightenSettings) {
+        straightenCheckbox.addEventListener('change', () => {
+            if (straightenCheckbox.checked) {
+                straightenSettings.classList.add('visible');
+            } else {
+                straightenSettings.classList.remove('visible');
+            }
+            updateStaleIndicator();
+        });
+    }
+
+    // Setup simplify checkbox to show/hide tolerance slider
+    const simplifyCheckbox = document.getElementById('simplify');
+    const simplifySettings = document.getElementById('simplifySettings');
+    if (simplifyCheckbox && simplifySettings) {
+        simplifyCheckbox.addEventListener('change', () => {
+            if (simplifyCheckbox.checked) {
+                simplifySettings.classList.add('visible');
+            } else {
+                simplifySettings.classList.remove('visible');
+            }
+            updateStaleIndicator();
+        });
+    }
+
+    // Setup invert checkbox change detection
+    const invertCheckbox = document.getElementById('invert');
+    if (invertCheckbox) {
+        invertCheckbox.addEventListener('change', updateStaleIndicator);
+    }
+    const clInvertCheckbox = document.getElementById('cl-invert');
+    if (clInvertCheckbox) {
+        clInvertCheckbox.addEventListener('change', updateStaleIndicator);
+    }
 
     // Centerline sliders
     setupSlider('cl-despeckleLevel', 'cl-despeckleValue');
@@ -40,6 +145,51 @@ function initSliders() {
     setupSlider('vt-segment', 'vt-segmentValue');
     setupSlider('vt-splice', 'vt-spliceValue');
     setupSlider('vt-filterSpeckle', 'vt-filterValue');
+
+    // vtracer mode dropdown change detection
+    const vtMode = document.getElementById('vt-mode');
+    if (vtMode) {
+        vtMode.addEventListener('change', updateStaleIndicator);
+    }
+}
+
+// Initialize format selector
+function initFormatSelector() {
+    const formatButtons = document.getElementById('formatButtons');
+    const formatNote = document.getElementById('formatNote');
+    if (!formatButtons) return;
+
+    formatButtons.addEventListener('click', (e) => {
+        const btn = e.target.closest('.format-btn');
+        if (!btn) return;
+
+        // Update active state
+        formatButtons.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        currentFormat = btn.dataset.format;
+        updateStaleIndicator();
+        updateFormatNote();
+    });
+
+    updateFormatNote();
+}
+
+function updateFormatNote() {
+    const formatNote = document.getElementById('formatNote');
+    if (!formatNote) return;
+
+    // vtracer only supports SVG
+    if (currentMethod === 'vtracer' && currentFormat !== 'svg') {
+        formatNote.textContent = 'Note: vtracer only supports SVG output';
+        formatNote.style.display = 'block';
+    } else if (currentFormat !== 'svg') {
+        formatNote.textContent = 'Note: Preview only available for SVG format';
+        formatNote.style.display = 'block';
+    } else {
+        formatNote.textContent = '';
+        formatNote.style.display = 'none';
+    }
 }
 
 function setupSlider(sliderId, valueId) {
@@ -48,6 +198,7 @@ function setupSlider(sliderId, valueId) {
     if (slider && valueSpan) {
         slider.addEventListener('input', () => {
             valueSpan.textContent = slider.value;
+            updateStaleIndicator();
         });
     }
 }
@@ -148,6 +299,11 @@ function initTabs() {
         currentMethod = method;
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(`tab-${method}`).classList.add('active');
+
+        // Check if results are now stale
+        updateStaleIndicator();
+        // Update format note (vtracer only supports SVG)
+        updateFormatNote();
     });
 }
 
@@ -168,6 +324,9 @@ function initPresetSelection() {
             btn.classList.add('active');
 
             currentPresets[method] = btn.dataset.preset;
+
+            // Check if results are now stale
+            updateStaleIndicator();
 
             // Show/hide custom settings
             const customPanel = document.getElementById(`customSettings-${method}`);
@@ -226,10 +385,16 @@ function initConvertButton() {
         selectedFiles.forEach(file => formData.append('files', file));
         formData.append('method', currentMethod);
         formData.append('preset', currentPresets[currentMethod]);
+        formData.append('output_format', currentFormat);
 
         // Add method-specific custom parameters
         if (currentPresets[currentMethod] === 'custom') {
             appendCustomParams(formData, currentMethod);
+        }
+
+        // Always send post-processing options for potrace (available for all presets)
+        if (currentMethod === 'potrace') {
+            appendPotracePostProcessParams(formData);
         }
 
         try {
@@ -243,6 +408,15 @@ function initConvertButton() {
                 showError(data.error);
             } else {
                 renderResults(data.results);
+                // Track what settings were used for this conversion
+                lastConversion.method = currentMethod;
+                lastConversion.preset = currentPresets[currentMethod];
+                lastConversion.format = currentFormat;
+                lastConversion.customHash = currentPresets[currentMethod] === 'custom'
+                    ? getCustomSettingsHash(currentMethod)
+                    : null;
+                lastConversion.hasResults = true;
+                updateStaleIndicator();
             }
         } catch (error) {
             showError('Error: ' + error.message);
@@ -259,13 +433,22 @@ function showError(message) {
     resultsDiv.appendChild(errorDiv);
 }
 
+function appendPotracePostProcessParams(formData) {
+    // Post-processing options are available for all potrace presets
+    formData.append('invert', document.getElementById('invert').checked);
+    formData.append('straighten', document.getElementById('straighten').checked);
+    formData.append('straighten_tolerance', document.getElementById('straightenTolerance').value);
+    formData.append('simplify', document.getElementById('simplify').checked);
+    formData.append('simplify_tolerance', document.getElementById('simplifyTolerance').value);
+}
+
 function appendCustomParams(formData, method) {
     if (method === 'potrace') {
         formData.append('corner_threshold', document.getElementById('cornerThreshold').value);
         formData.append('optimize_tolerance', document.getElementById('optimizeTolerance').value);
         formData.append('despeckle', document.getElementById('despeckle').value);
         formData.append('threshold', document.getElementById('threshold').value);
-        formData.append('invert', document.getElementById('invert').checked);
+        // Note: post-processing params are added separately by appendPotracePostProcessParams
     } else if (method === 'centerline') {
         formData.append('despeckle_level', document.getElementById('cl-despeckleLevel').value);
         formData.append('cl_corner_threshold', document.getElementById('cl-cornerThreshold').value);
@@ -386,13 +569,21 @@ function renderResults(results) {
 
             if (result.preview_url) {
                 const convertedImg = document.createElement('img');
-                convertedImg.src = result.preview_url;
+                // Add cache-busting timestamp to prevent browser caching old results
+                convertedImg.src = result.preview_url + '?t=' + Date.now();
                 convertedImg.alt = 'Converted SVG';
                 afterContent.appendChild(convertedImg);
             } else {
-                const noPreview = document.createElement('p');
-                noPreview.textContent = result.preview_unavailable_reason || 'Preview not available';
-                noPreview.style.color = '#999';
+                const noPreview = document.createElement('div');
+                noPreview.className = 'no-preview-msg';
+                const formatUpper = (result.output_format || 'svg').toUpperCase();
+                const badge = document.createElement('span');
+                badge.className = 'format-badge';
+                badge.textContent = formatUpper;
+                const msg = document.createElement('p');
+                msg.textContent = `Preview not available for ${formatUpper} format`;
+                noPreview.appendChild(badge);
+                noPreview.appendChild(msg);
                 afterContent.appendChild(noPreview);
             }
 
@@ -411,16 +602,21 @@ function renderResults(results) {
             downloadLink.href = result.download_url;
             downloadLink.className = 'btn-download';
             downloadLink.download = '';
-            downloadLink.textContent = 'Download SVG';
-
-            const previewLink = document.createElement('a');
-            previewLink.href = '/preview/' + encodeURIComponent(result.output_filename);
-            previewLink.className = 'btn-preview';
-            previewLink.target = '_blank';
-            previewLink.textContent = 'Open in Tab';
+            const formatUpper = (result.output_format || 'svg').toUpperCase();
+            downloadLink.textContent = `Download ${formatUpper}`;
 
             actions.appendChild(downloadLink);
-            actions.appendChild(previewLink);
+
+            // Only show "Open in Tab" for SVG
+            if (result.preview_url) {
+                const previewLink = document.createElement('a');
+                previewLink.href = '/preview/' + encodeURIComponent(result.output_filename);
+                previewLink.className = 'btn-preview';
+                previewLink.target = '_blank';
+                previewLink.textContent = 'Open in Tab';
+                actions.appendChild(previewLink);
+            }
+
             item.appendChild(actions);
         } else {
             const errorMsg = document.createElement('p');
@@ -439,5 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initDropZone();
     initTabs();
     initPresetSelection();
+    initFormatSelector();
     initConvertButton();
 });

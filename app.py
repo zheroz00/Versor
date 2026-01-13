@@ -23,33 +23,51 @@ app = Flask(__name__)
 
 def get_potrace_settings(preset_key, form_data):
     """Extract Potrace settings from preset or custom values."""
+    # Output format applies to all presets
+    output_format = form_data.get('output_format', 'svg')
+
     if preset_key == 'custom':
         return {
             'corner_threshold': float(form_data.get('corner_threshold', 0)),
             'optimize_tolerance': float(form_data.get('optimize_tolerance', 0.1)),
             'despeckle': int(form_data.get('despeckle', 2)),
             'threshold': int(form_data.get('threshold', 50)),
-            'invert': form_data.get('invert') == 'true'
+            'invert': form_data.get('invert') == 'true',
+            'simplify': form_data.get('simplify') == 'true',
+            'simplify_tolerance': float(form_data.get('simplify_tolerance', 2.0)),
+            'straighten': form_data.get('straighten') == 'true',
+            'straighten_tolerance': float(form_data.get('straighten_tolerance', 1.0)),
+            'output_format': output_format
         }
     preset = POTRACE_PRESETS.get(preset_key, POTRACE_PRESETS['cnc_precise'])
+    # Post-processing options are available for all presets
     return {
         'corner_threshold': preset['corner_threshold'],
         'optimize_tolerance': preset['optimize_tolerance'],
         'despeckle': preset['despeckle'],
         'threshold': preset['threshold'],
-        'invert': form_data.get('invert') == 'true'
+        'invert': form_data.get('invert') == 'true',
+        'simplify': form_data.get('simplify') == 'true',
+        'simplify_tolerance': float(form_data.get('simplify_tolerance', 2.0)),
+        'straighten': form_data.get('straighten') == 'true',
+        'straighten_tolerance': float(form_data.get('straighten_tolerance', 1.0)),
+        'output_format': output_format
     }
 
 
 def get_centerline_settings(preset_key, form_data):
     """Extract centerline settings from preset or custom values."""
+    # Output format applies to all presets
+    output_format = form_data.get('output_format', 'svg')
+
     if preset_key == 'custom':
         return {
             'despeckle_level': int(form_data.get('despeckle_level', 2)),
             'corner_threshold': int(form_data.get('cl_corner_threshold', 100)),
             'line_threshold': float(form_data.get('line_threshold', 1.0)),
             'threshold': int(form_data.get('threshold', 50)),
-            'invert': form_data.get('invert') == 'true'
+            'invert': form_data.get('invert') == 'true',
+            'output_format': output_format
         }
     preset = CENTERLINE_PRESETS.get(preset_key, CENTERLINE_PRESETS['line_art'])
     return {
@@ -57,7 +75,8 @@ def get_centerline_settings(preset_key, form_data):
         'corner_threshold': preset['corner_threshold'],
         'line_threshold': preset['line_threshold'],
         'threshold': preset['threshold'],
-        'invert': form_data.get('invert') == 'true'
+        'invert': form_data.get('invert') == 'true',
+        'output_format': output_format
     }
 
 
@@ -124,6 +143,11 @@ def convert():
     else:
         return jsonify({'error': f'Unknown method: {method}'}), 400
 
+    # Determine output format (vtracer only supports SVG)
+    output_format = settings.get('output_format', 'svg')
+    if method == 'vtracer':
+        output_format = 'svg'
+
     results = []
 
     for file in files:
@@ -148,9 +172,9 @@ def convert():
                 mime_type = mime_types.get(ext, 'image/png')
                 original_preview = f"data:{mime_type};base64,{base64.b64encode(img_data).decode('utf-8')}"
 
-        # Generate output filename
+        # Generate output filename with correct extension
         base_name = os.path.splitext(filename)[0]
-        output_filename = f"{base_name}.svg"
+        output_filename = f"{base_name}.{output_format}"
         output_path = os.path.join(OUTPUT_FOLDER, output_filename)
 
         # Convert
@@ -159,6 +183,7 @@ def convert():
         result = {
             'filename': filename,
             'output_filename': output_filename,
+            'output_format': output_format,
             'success': success,
             'message': message
         }
@@ -167,10 +192,12 @@ def convert():
         if original_preview:
             result['original_preview'] = original_preview
 
-        # Include preview URL if successful
+        # Include preview/download URLs if successful
         if success and os.path.exists(output_path):
             result['download_url'] = f'/download/{output_filename}'
-            result['preview_url'] = f'/preview/{output_filename}'
+            # Only SVG can be previewed in browser
+            if output_format == 'svg':
+                result['preview_url'] = f'/preview/{output_filename}'
 
         results.append(result)
 
@@ -183,14 +210,23 @@ def convert():
 
 @app.route('/download/<filename>')
 def download(filename):
-    """Download a converted SVG file."""
+    """Download a converted file."""
     return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
 
 
 @app.route('/preview/<filename>')
 def preview(filename):
-    """Preview a converted SVG file in browser."""
-    return send_from_directory(OUTPUT_FOLDER, filename, mimetype='image/svg+xml')
+    """Preview a converted file in browser."""
+    # Determine mimetype from extension
+    ext = os.path.splitext(filename)[1].lower()
+    mimetypes = {
+        '.svg': 'image/svg+xml',
+        '.pdf': 'application/pdf',
+        '.eps': 'application/postscript',
+        '.dxf': 'application/dxf'
+    }
+    mimetype = mimetypes.get(ext, 'application/octet-stream')
+    return send_from_directory(OUTPUT_FOLDER, filename, mimetype=mimetype)
 
 
 if __name__ == '__main__':

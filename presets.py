@@ -21,6 +21,14 @@ POTRACE_PRESETS = {
         "despeckle": 2,
         "threshold": 50
     },
+    "clean_output": {
+        "name": "Clean Output",
+        "description": "Minimal nodes for clean B&W art. Sharp corners, optimized paths.",
+        "corner_threshold": 0,
+        "optimize_tolerance": 0.02,
+        "despeckle": 1,
+        "threshold": 50
+    },
     "smooth": {
         "name": "Smooth Lines",
         "description": "Cleaner output, reduces noise. Good for rough scans or sketchy line art.",

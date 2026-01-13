@@ -145,9 +145,31 @@
                             <input type="range" id="threshold" min="10" max="90" step="5" value="50">
                             <span class="setting-value" id="thresholdValue">50</span>
                         </div>
+                    </div>
+
+                    <!-- Post-processing options (available for all presets) -->
+                    <div class="postprocess-settings">
                         <div class="setting-row checkbox-row">
                             <input type="checkbox" id="invert">
                             <label for="invert">Invert colors</label>
+                        </div>
+                        <div class="setting-row checkbox-row">
+                            <input type="checkbox" id="straighten">
+                            <label for="straighten">Smart straighten (keeps curves, straightens lines)</label>
+                        </div>
+                        <div class="setting-row straighten-settings" id="straightenSettings">
+                            <label>Straighten Tolerance</label>
+                            <input type="range" id="straightenTolerance" min="0.5" max="5" step="0.5" value="1">
+                            <span class="setting-value" id="straightenValue">1</span>
+                        </div>
+                        <div class="setting-row checkbox-row">
+                            <input type="checkbox" id="simplify">
+                            <label for="simplify">Simplify paths (converts curves to polylines)</label>
+                        </div>
+                        <div class="setting-row simplify-settings" id="simplifySettings">
+                            <label>Simplify Tolerance</label>
+                            <input type="range" id="simplifyTolerance" min="0.5" max="10" step="0.5" value="2">
+                            <span class="setting-value" id="simplifyValue">2</span>
                         </div>
                     </div>
                 </div>
@@ -257,7 +279,19 @@
                     </div>
                 </div>
 
-                <button class="convert-btn" id="convertBtn" disabled>Convert to SVG</button>
+                <!-- Output Format Selector -->
+                <div class="format-selector">
+                    <label>Output Format</label>
+                    <div class="format-buttons" id="formatButtons">
+                        <button type="button" class="format-btn active" data-format="svg">SVG</button>
+                        <button type="button" class="format-btn" data-format="dxf">DXF</button>
+                        <button type="button" class="format-btn" data-format="pdf">PDF</button>
+                        <button type="button" class="format-btn" data-format="eps">EPS</button>
+                    </div>
+                    <p class="format-note" id="formatNote"></p>
+                </div>
+
+                <button class="convert-btn" id="convertBtn" disabled>Convert</button>
             </div>
 
             <div class="panel results-panel">
@@ -266,6 +300,11 @@
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
                     <p>Converting...</p>
+                </div>
+
+                <div class="stale-indicator" id="staleIndicator">
+                    <span class="stale-icon">&#x21bb;</span>
+                    Settings changed - click <strong>Convert</strong> to update results
                 </div>
 
                 <div id="results">

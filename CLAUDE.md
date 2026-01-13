@@ -12,8 +12,10 @@ Versor is a local web application for converting raster images (PNG, JPG, BMP, G
 
 ## Running the Application
 
-**Local development:**
+**Local development (Python 3.10+):**
 ```bash
+uv venv && source .venv/bin/activate
+uv pip install -r requirements.txt
 python app.py
 ```
 Opens at http://localhost:5000
@@ -28,6 +30,7 @@ Opens at http://localhost:5000
 ```bash
 docker compose up
 ```
+Opens at http://localhost:5555
 
 ## External Dependencies
 
@@ -38,6 +41,10 @@ Required:
 Optional (enable additional methods):
 - **Autotrace**: Path via `AUTOTRACE_PATH` env var (enables centerline tracing)
 - **vtracer**: Path via `VTRACER_PATH` env var (enables color/detail tracing)
+
+Environment variables:
+- `FLASK_HOST`: Bind address (default: `127.0.0.1`)
+- `FLASK_DEBUG`: Enable debug mode (default: `true`)
 
 ## Architecture
 
@@ -52,6 +59,7 @@ Versor/
 │   ├── potrace.py         # Outline tracing
 │   ├── centerline.py      # Single-line tracing
 │   ├── vtracer.py         # Color/detail tracing
+│   ├── simplify.py        # SVG path simplification (RDP algorithm)
 │   └── dependencies.py    # Tool availability checking
 ├── static/
 │   ├── css/style.css      # All CSS styles
@@ -64,10 +72,14 @@ Versor/
 
 **Conversion Pipelines:**
 ```
-Potrace:    Image → ImageMagick (threshold to BMP) → Potrace → SVG
+Potrace:    Image → ImageMagick (threshold to BMP) → Potrace → SVG [→ simplify/straighten]
 Centerline: Image → ImageMagick (threshold to PBM) → Autotrace (-centerline) → SVG
 vtracer:    Image → vtracer (direct) → SVG
 ```
+
+**Post-processing (Potrace only):**
+- `simplify`: RDP algorithm reduces node count while preserving shape geometry
+- `straighten`: Converts nearly-straight Bezier curves to lines
 
 **Presets System:**
 
